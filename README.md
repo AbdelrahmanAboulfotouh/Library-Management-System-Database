@@ -49,10 +49,10 @@ The GUI is built with Python's `tkinter` module and provides an intuitive interf
 ---
 ## Future Enhancements
 
-Add member and fine management features in the GUI.
-Implement borrowing and returning workflows with due date notifications.
-Enhance user experience with advanced search and sorting options.
-Add support for user authentication.
+- Add member and fine management features in the GUI.
+- Implement borrowing and returning workflows with due date notifications.
+- Enhance user experience with advanced search and sorting options.
+- Add support for user authentication.
 
 ## Getting Started
 
