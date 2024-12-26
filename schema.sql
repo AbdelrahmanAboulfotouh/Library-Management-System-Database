@@ -1,0 +1,67 @@
+CREATE DATABASE LibraryManagement ; 
+USE LibraryManagement;
+
+CREATE TABLE Books (
+    BookID INT AUTO_INCREMENT PRIMARY KEY,
+    Title VARCHAR(255) NOT NULL,
+    Author VARCHAR(255) NOT NULL,
+    Genre VARCHAR(100),
+    ISBN VARCHAR(20) UNIQUE NOT NULL,
+    PublishedYear YEAR,
+    CopiesAvailable INT NOT NULL DEFAULT 0
+);
+CREATE TABLE Members (
+    MemberID INT AUTO_INCREMENT PRIMARY KEY,
+    FullName VARCHAR(255) NOT NULL,
+    Email VARCHAR(255) UNIQUE NOT NULL,
+    Phone VARCHAR(15),
+    Address VARCHAR(250),
+    MembershipDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE Borrowing (
+    BorrowID INT AUTO_INCREMENT PRIMARY KEY,
+
+    MemberID INT NOT NULL,
+    BookID INT NOT NULL,
+    BorrowDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+    DueDate DATE NOT NULL,
+    ReturnDate DATE,
+    FOREIGN KEY (MemberID) REFERENCES Members(MemberID) ,
+    FOREIGN KEY (BookID) REFERENCES Books(BookID) 
+);
+
+CREATE TABLE Fines (
+    FineID INT AUTO_INCREMENT PRIMARY KEY,
+    BorrowID INT NOT NULL,
+    FineAmount DECIMAL(10, 2) NOT NULL,
+    Paid BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (BorrowID) REFERENCES Borrowing(BorrowID) 
+);
+
+
+DELIMITER $$
+
+CREATE TRIGGER AfterBorrow
+AFTER INSERT ON Borrowing
+FOR EACH ROW
+BEGIN
+    UPDATE Books
+    SET CopiesAvailable = CopiesAvailable - 1
+    WHERE BookID = NEW.BookID;
+END$$
+
+
+DELIMITER ///
+
+CREATE TRIGGER AfterReturn
+AFTER UPDATE ON Borrowing
+FOR EACH ROW
+BEGIN
+    IF NEW.ReturnDate IS NOT NULL THEN
+        UPDATE Books
+        SET CopiesAvailable = CopiesAvailable + 1
+        WHERE BookID = NEW.BookID;
+    END IF;
+END///
+DELIMITER ;
+
